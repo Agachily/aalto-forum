@@ -1,3 +1,4 @@
+let CONTEXT_PATH = "/mybbs";
 window.alert = function(message) {
 	if(!$(".alert-box").length) {
 		$("body").append(
