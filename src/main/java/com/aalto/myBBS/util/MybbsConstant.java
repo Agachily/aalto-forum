@@ -1,0 +1,12 @@
+package com.aalto.myBBS.util;
+
+public interface MybbsConstant {
+    /* Successful Registration */
+    int ACTIVATION_SUCCESS = 0;
+
+    /* Repeat Registration */
+    int ACTIVATION_REPEAT = 1;
+
+    /* Repeat Failure */
+    int ACTIVATION_FAILURE = 2;
+}
