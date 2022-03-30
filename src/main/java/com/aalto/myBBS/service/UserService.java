@@ -1,6 +1,8 @@
 package com.aalto.myBBS.service;
 
+import com.aalto.myBBS.dao.LoginTicketMapper;
 import com.aalto.myBBS.dao.UserMapper;
+import com.aalto.myBBS.entity.LoginTicket;
 import com.aalto.myBBS.entity.User;
 import com.aalto.myBBS.util.MailClient;
 import com.aalto.myBBS.util.MybbsConstant;
@@ -27,6 +29,9 @@ public class UserService implements MybbsConstant {
 
     @Autowired
     private TemplateEngine templateEngine;
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Value("${mybbs.path.domain}")
     private String domain;
@@ -124,4 +129,62 @@ public class UserService implements MybbsConstant {
             return ACTIVATION_FAILURE;
         }
     }
+
+    public Map<String, Object> login(String username, String password, int expiredSeconds){
+        Map<String, Object> map = new HashMap<>();
+
+        /* Deal with the empty value */
+        if (StringUtils.isBlank(username)) {
+            map.put("usernameMsg", "The username should not be empty");
+            return map;
+        }
+        if (StringUtils.isBlank(password)) {
+            map.put("passwordMsg", "The password should not be empty");
+        }
+
+        /* Verify the account */
+        User user = userMapper.selectByName(username);
+        if (user == null) {
+            map.put("usernameMsg", "The account doesn't exist");
+            return map;
+        }
+
+        /* Verify the password */
+        password = MybbsUtil.md5(password + user.getSalt());
+        if (!user.getPassword().equals(password)) {
+            map.put("passwordMsg", "The password is not correct");
+            return map;
+        }
+
+        /* Generate the login ticket */
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(MybbsUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+
+        map.put("ticket", loginTicket.getTicket());
+        return map;
+    }
+
+    public void logout(String ticket) {
+        loginTicketMapper.updateStatus(ticket,1);
+    }
+
+    public LoginTicket findLoginTicket(String ticket) {
+        return loginTicketMapper.selectByTicket(ticket);
+    }
+
+    /**
+     * About the information of user header
+     * @param userId
+     * @param headerUrl
+     * @return
+     */
+    public int updateHeader(int userId, String headerUrl) {
+        return userMapper.updateHeader(userId, headerUrl);
+    }
+
+
 }

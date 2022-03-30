@@ -5,16 +5,20 @@ import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.google.code.kaptcha.Producer;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -35,6 +39,9 @@ public class LoginController implements MybbsConstant {
 
     @Autowired
     private Producer kaptchaProducer;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
 
     /**
      * Get the page for registration
@@ -114,5 +121,46 @@ public class LoginController implements MybbsConstant {
         } catch (IOException e) {
             logger.error("Fail to response the code" + e.getMessage());
         }
+    }
+
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public String login(String username, String password, String code,
+                        boolean rememberme, Model model, HttpSession session, HttpServletResponse response) {
+        // Get the activation code from the session
+        String kaptcha = (String) session.getAttribute("kaptcha");
+
+        if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
+            model.addAttribute("codeMsg", "The verification code is not right");
+            return "/site/login";
+        }
+
+        int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        // Call the userService class to dealt with the login issue
+        Map<String, Object> map = userService.login(username, password, expiredSeconds);
+
+        /* Judge is the login is successful */
+        if (map.containsKey("ticket")) {
+            // Send the ticket to use clint as the cookie
+            Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
+            // Specifies a path for the cookie to which the client should return the cookie.
+            // The cookie is visible to all the pages in the directory you specify
+            // and all the pages in that directory's subdirectories.
+            cookie.setPath(contextPath);
+            // Sets the maximum age of the cookie in seconds.
+            response.addCookie(cookie);
+            // Return to the main page after successful login
+            return "redirect:/index";
+        } else {
+            model.addAttribute("usernameMsg", map.get("usernameMsg"));
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/login";
+        }
+    }
+
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket") String ticket) {
+        userService.logout(ticket);
+        // Redirect to login
+        return "redirect:/login";
     }
 }
