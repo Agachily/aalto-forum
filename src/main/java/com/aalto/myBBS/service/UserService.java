@@ -186,5 +186,16 @@ public class UserService implements MybbsConstant {
         return userMapper.updateHeader(userId, headerUrl);
     }
 
+    public Map<String, Object> resetPassword(User user, String oldpassword, String newpassword) {
+        Map<String, Object> map = new HashMap<>();
 
+        oldpassword = MybbsUtil.md5(oldpassword + user.getSalt());
+        if (!user.getPassword().equals(oldpassword)) {
+            map.put("passwordMsg", "The original password is not correct");
+            return map;
+        }
+        newpassword = MybbsUtil.md5(newpassword + user.getSalt());
+        userMapper.updatePassword(user.getId(), newpassword);
+        return null;
+    }
 }

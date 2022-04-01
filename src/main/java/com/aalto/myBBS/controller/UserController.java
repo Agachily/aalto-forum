@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -113,6 +114,28 @@ public class UserController {
             }
         } catch (IOException e) {
            logger.error("Fail to read the header image" + e.getMessage());
+        }
+    }
+
+    /**
+     * reset the password
+     */
+    @RequestMapping(path="/resetpassword", method=RequestMethod.POST)
+    public String resetPassword(String oldpassword, String newpassword, String confirmpassword, Model model) {
+        if (!confirmpassword.equals(newpassword)) {
+            model.addAttribute("confirmerror", "The password you input is different");
+            return "/site/setting";
+        }
+
+        User user = hostHolder.getUser();
+        Map<String, Object> map = userService.resetPassword(user, oldpassword, newpassword);
+        if (map == null || map.isEmpty()) {
+            model.addAttribute("msg", "The password is updated successfully");
+            model.addAttribute("target", "/logout");
+            return "/site/operate-result";
+        } else {
+            model.addAttribute("passwordMsg", map.get("passwordMsg"));
+            return "/site/setting";
         }
     }
 }
