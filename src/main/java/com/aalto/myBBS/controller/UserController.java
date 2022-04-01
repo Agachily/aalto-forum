@@ -1,5 +1,6 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.annotation.LoginRequired;
 import com.aalto.myBBS.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
@@ -49,6 +50,7 @@ public class UserController {
      * Define the method to response the user with the setting page
      * @return
      */
+    @LoginRequired
     @RequestMapping(path = "/setting", method = RequestMethod.GET)
     public String getSettingPage() {
         return "/site/setting";
@@ -58,6 +60,7 @@ public class UserController {
      * This method is used to upload the header photo
      * @return
      */
+    @LoginRequired
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {
         if (headerImage == null) {
@@ -75,7 +78,7 @@ public class UserController {
             return "/site/setting";
         }
         // Generate the original filename
-        fileName = MybbsUtil.generateUUID() + suffix;
+        fileName = MybbsUtil.generateUUID() + "." + suffix;
         // Set the path to store the file
         File dest = new File(uploadPath + "/" + fileName);
         try {
@@ -124,6 +127,8 @@ public class UserController {
     public String resetPassword(String oldpassword, String newpassword, String confirmpassword, Model model) {
         if (!confirmpassword.equals(newpassword)) {
             model.addAttribute("confirmerror", "The password you input is different");
+            model.addAttribute("oldpassword", oldpassword);
+            model.addAttribute("newpassword", newpassword);
             return "/site/setting";
         }
 
