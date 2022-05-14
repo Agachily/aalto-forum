@@ -37,4 +37,12 @@
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
     </insert>
+
+    <!--注意当所插入的数据和所返回的数据不是普通的数据类型是，要对其进行指明-->
+    <select id="selectDiscussPostById" resultType="DiscussPost">
+        <!--注意此处所插入的变量值要和对象中的字段名称所对应-->
+        select <include refid="selectFields"></include>
+        from discuss_post
+        where id = #{id}
+    </select>
 </mapper>

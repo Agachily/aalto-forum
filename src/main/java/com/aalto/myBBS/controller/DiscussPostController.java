@@ -1,17 +1,17 @@
 package com.aalto.myBBS.controller;
 
-import com.aalto.myBBS.entity.DiscussPost;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.DiscussPost;
+import com.aalto.myBBS.service.entity.Page;
+import com.aalto.myBBS.service.entity.User;
+import com.aalto.myBBS.service.CommentService;
 import com.aalto.myBBS.service.DiscussPostService;
+import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
 import com.aalto.myBBS.util.MybbsUtil;
-import org.apache.tomcat.util.http.parser.Host;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
@@ -23,6 +23,12 @@ public class DiscussPostController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     // To return the JSON string, we should use the @RequestBody annotation and the String as the return type.
     @RequestMapping(path = "/add", method = RequestMethod.POST)
@@ -41,5 +47,22 @@ public class DiscussPostController {
 
         // The error will be processed in the future
         return MybbsUtil.getJSONString(200, "The post has been released");
+    }
+
+    // 注意此处返回的是模版，所以不需要写@ResponseBody
+    // 注意如果参数中传入了Java Bean类型的参数，Spring MVC会自动将其存入到Model中
+    @RequestMapping(path = "/detail/{id}", method = RequestMethod.GET)
+    public String getDiscussPost(@PathVariable("id") int id, Model model, Page page) {
+        DiscussPost post = discussPostService.findDiscussPostById(id);
+        model.addAttribute("post", post);
+
+        User user = userService.findUserById(post.getUserId());
+        model.addAttribute("user", user);
+
+        page.setLimit(5);
+        page.setPath("/discuss/detail/" + id);
+        page.setRows(post.getCommentCount());
+
+        return "/site/discuss-detail";
     }
 }

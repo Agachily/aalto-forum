@@ -1,6 +1,6 @@
 package com.aalto.myBBS.dao;
 
-import com.aalto.myBBS.entity.DiscussPost;
+import com.aalto.myBBS.service.entity.DiscussPost;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,4 +14,6 @@ public interface DiscussPostMapper {
     int selectDiscussPostRows(@Param("userId") int userId);
 
     int insertDiscussPost(DiscussPost discussPost);
+
+    DiscussPost selectDiscussPostById(int id);
 }

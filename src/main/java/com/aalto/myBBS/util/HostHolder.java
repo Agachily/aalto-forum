@@ -1,6 +1,6 @@
 package com.aalto.myBBS.util;
 
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.User;
 import org.springframework.stereotype.Component;
 
 /**

@@ -1,6 +1,6 @@
 package com.aalto.myBBS.dao;
 
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

@@ -2,8 +2,8 @@ package com.aalto.myBBS.service;
 
 import com.aalto.myBBS.dao.LoginTicketMapper;
 import com.aalto.myBBS.dao.UserMapper;
-import com.aalto.myBBS.entity.LoginTicket;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.LoginTicket;
+import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.util.MailClient;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.aalto.myBBS.util.MybbsUtil;

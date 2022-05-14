@@ -1,4 +1,4 @@
-package com.aalto.myBBS.entity;
+package com.aalto.myBBS.service.entity;
 
 /**
  * 封装分页相关的信息.

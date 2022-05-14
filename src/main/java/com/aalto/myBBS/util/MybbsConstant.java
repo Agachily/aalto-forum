@@ -17,4 +17,9 @@ public interface MybbsConstant {
      * The expiration time int he rememberMe status
      */
     int REMEMBER_EXPIRED_SECONDS = 3600 * 24 * 100;
+
+    /**
+     * The entity type of post
+     */
+
 }

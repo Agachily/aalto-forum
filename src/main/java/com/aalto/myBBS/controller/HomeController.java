@@ -1,8 +1,8 @@
 package com.aalto.myBBS.controller;
 
-import com.aalto.myBBS.entity.DiscussPost;
-import com.aalto.myBBS.entity.Page;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.DiscussPost;
+import com.aalto.myBBS.service.entity.Page;
+import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.DiscussPostService;
 import com.aalto.myBBS.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.aalto.myBBS.dao;
 
-import com.aalto.myBBS.entity.LoginTicket;
+import com.aalto.myBBS.service.entity.LoginTicket;
 import org.apache.ibatis.annotations.*;
 
 /**
@@ -11,6 +11,7 @@ public interface LoginTicketMapper {
 
     @Insert({"insert into login_ticket (user_id, ticket, status, expired) ",
              "values(#{userId}, #{ticket}, #{status}, #{expired})"}) // The value is obtained from the loginTicket entity
+
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertLoginTicket(LoginTicket loginTicket);
 

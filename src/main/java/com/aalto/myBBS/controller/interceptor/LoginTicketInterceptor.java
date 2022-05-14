@@ -1,7 +1,7 @@
 package com.aalto.myBBS.controller.interceptor;
 
-import com.aalto.myBBS.entity.LoginTicket;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.LoginTicket;
+import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.CookieUtil;
 import com.aalto.myBBS.util.HostHolder;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;

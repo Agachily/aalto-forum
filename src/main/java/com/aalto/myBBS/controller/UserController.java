@@ -1,7 +1,7 @@
 package com.aalto.myBBS.controller;
 
 import com.aalto.myBBS.annotation.LoginRequired;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
 import com.aalto.myBBS.util.MybbsUtil;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;

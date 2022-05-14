@@ -3,9 +3,8 @@ package com.aalto.myBBS;
 import com.aalto.myBBS.dao.DiscussPostMapper;
 import com.aalto.myBBS.dao.LoginTicketMapper;
 import com.aalto.myBBS.dao.UserMapper;
-import com.aalto.myBBS.entity.DiscussPost;
-import com.aalto.myBBS.entity.LoginTicket;
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.LoginTicket;
+import com.aalto.myBBS.service.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
-import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

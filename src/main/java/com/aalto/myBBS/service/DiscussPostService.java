@@ -1,7 +1,7 @@
 package com.aalto.myBBS.service;
 
 import com.aalto.myBBS.dao.DiscussPostMapper;
-import com.aalto.myBBS.entity.DiscussPost;
+import com.aalto.myBBS.service.entity.DiscussPost;
 import com.aalto.myBBS.util.SensitiveFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,5 +38,9 @@ public class DiscussPostService {
         discussPost.setContent(sensitiveFilter.filter(discussPost.getContent()));
 
         return discussPostMapper.insertDiscussPost(discussPost);
+    }
+
+    public DiscussPost findDiscussPostById(int id) {
+        return discussPostMapper.selectDiscussPostById(id);
     }
 }

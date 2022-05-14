@@ -1,10 +1,9 @@
 package com.aalto.myBBS.controller;
 
-import com.aalto.myBBS.entity.User;
+import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.google.code.kaptcha.Producer;
-import com.google.code.kaptcha.impl.DefaultKaptcha;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

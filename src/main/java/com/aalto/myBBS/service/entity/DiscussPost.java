@@ -1,4 +1,4 @@
-package com.aalto.myBBS.entity;
+package com.aalto.myBBS.service.entity;
 
 import java.util.Date;
 
