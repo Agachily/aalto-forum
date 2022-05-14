@@ -13,26 +13,26 @@
     </sql>
 
     <!--此处Id要写其对应的接口中的方法名, resultType中是返回数据的类型, #{id}代表方法中的参数-->
-    <select id="selectById" resultType="User">
+    <select id="selectById" resultType="com.aalto.myBBS.service.entity.User">
         select <include refid="selectFields"/>
         from user
         where id = #{id}
     </select>
 
-    <select id="selectByName" resultType="User">
+    <select id="selectByName" resultType="com.aalto.myBBS.service.entity.User">
         select <include refid="selectFields"/>
         from user
         where username = #{username}
     </select>
 
-    <select id="selectByEmail" resultType="User">
+    <select id="selectByEmail" resultType="com.aalto.myBBS.service.entity.User">
         select <include refid="selectFields"/>
         from user
         where email = #{email}
     </select>
 
     <!--使用parameterType来声明参数类型, keyProperty声明主键名, 注意不用写id, 因为其是自动生成的-->
-    <insert id="insertUser" parameterType="User" keyProperty="id">
+    <insert id="insertUser" parameterType="com.aalto.myBBS.service.entity.User" keyProperty="id">
         insert into user (<include refid="insertFields"/>)
         values (#{username}, #{password}, #{salt}, #{email}, #{type}, #{status}, #{activationCode}, #{headerUrl}, #{createTime})
     </insert>

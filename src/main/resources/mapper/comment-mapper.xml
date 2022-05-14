@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!--此处namespace要写所对应的实体类的全限定名-->
+<!--此处namespace要写所对应的实体类的全限定名，指明所对应的Mapper接口-->
 <mapper namespace="com.aalto.myBBS.dao.CommentMapper">
      <sql id = "selectFields">
          id, user_id, entity_type, entity_id, target_id, content, status, create_time
@@ -12,7 +12,8 @@
         select <include refid="selectFields"></include>
         from comment
         where status = 0
-        and entity_type = 0
+        and entity_type = #{entityType}
+        and entity_id = #{entityId}
         order by create_time asc
         limit #{offset}, #{limit}
     </select>
