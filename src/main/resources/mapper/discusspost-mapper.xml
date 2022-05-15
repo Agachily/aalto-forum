@@ -12,7 +12,7 @@
         user_id, title, content, type, status, create_time, comment_count, score
     </sql>
 
-    <select id="selectDiscussPosts" resultType="com.aalto.myBBS.service.entity.DiscussPost">
+    <select id="selectDiscussPosts" resultType="DiscussPost">
         select <include refid="selectFields"/>
         from discuss_post
         where status != 2
@@ -32,14 +32,14 @@
         </if>
     </select>
 
-    <insert id="insertDiscussPost" parameterType="com.aalto.myBBS.service.entity.DiscussPost">
+    <insert id="insertDiscussPost" parameterType="DiscussPost">
         <!--注意此处所插入的变量值要和对象中的字段名称所对应-->
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
     </insert>
 
     <!--注意当所插入的数据和所返回的数据不是普通的数据类型是，要对其进行指明-->
-    <select id="selectDiscussPostById" resultType="com.aalto.myBBS.service.entity.DiscussPost">
+    <select id="selectDiscussPostById" resultType="DiscussPost">
         <!--注意此处所插入的变量值要和对象中的字段名称所对应-->
         select <include refid="selectFields"></include>
         from discuss_post

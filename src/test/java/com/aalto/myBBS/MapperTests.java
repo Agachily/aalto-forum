@@ -1,9 +1,12 @@
 package com.aalto.myBBS;
 
+import static org.junit.Assert.*;
 import com.aalto.myBBS.dao.DiscussPostMapper;
 import com.aalto.myBBS.dao.LoginTicketMapper;
+import com.aalto.myBBS.dao.MessageMapper;
 import com.aalto.myBBS.dao.UserMapper;
 import com.aalto.myBBS.service.entity.LoginTicket;
+import com.aalto.myBBS.service.entity.Message;
 import com.aalto.myBBS.service.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,8 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.Date;
+import java.util.List;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,6 +24,9 @@ import java.util.Date;
 public class MapperTests {
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     @Autowired
     private DiscussPostMapper discussPostMapper;
@@ -73,11 +80,6 @@ public class MapperTests {
     
     @Test
     public void testDiscussPostMapper() {
-        /*List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(0, 0, 10);
-        for (DiscussPost d : discussPosts) {
-            System.out.println(d);
-        }*/
-
         int rows = discussPostMapper.selectDiscussPostRows(149);
         System.out.println(rows);
     }
@@ -104,5 +106,26 @@ public class MapperTests {
         loginTicketMapper.updateStatus("abc", 1);
         LoginTicket loginTicket = loginTicketMapper.selectByTicket("abc");
         System.out.println(loginTicket);
+    }
+
+    /**
+     * This is used for testing the messgaeMapper
+     */
+    @Test
+    public void testSelectLetters() {
+        List<Message> list = messageMapper.selectConversations(111, 0, 20);
+        assertEquals(14, list.size());
+
+        int count = messageMapper.selectConversationCount(111);
+        assertEquals(14, count);
+
+        list = messageMapper.selectLetters("111_112", 0, 10);
+        assertEquals(8, list.size());
+
+        count = messageMapper.selectLetterCount("111_112");
+        assertEquals(8, count);
+
+        count = messageMapper.selectLetterUnreadCount(131, "111_131");
+        assertEquals(2, count);
     }
 }
