@@ -16,7 +16,7 @@ function send_letter() {
 		function (data) {
 			data = $.parseJSON(data);
 			// 根据所返回的数据来显示相应的信息
-			if (data.code === 0) {
+			if (data.code === 200) {
 				$("#hintBody").text("Message is send successfully");
 			} else {
 				$("#hintBody").text(data.msg);

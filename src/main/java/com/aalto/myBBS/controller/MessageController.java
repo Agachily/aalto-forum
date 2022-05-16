@@ -112,13 +112,21 @@ public class MessageController {
     @ResponseBody
     public String sendLetter(String receiverName, String content) {
         User receiver = userService.findUserByName(receiverName);
+        User currentUser = hostHolder.getUser();
         if (receiver ==  null) {
-            return MybbsUtil.getJSONString(1, "The receiver does not exist");
+            return MybbsUtil.getJSONString(400, "The receiver does not exist");
+        }
+        if (receiver.getId() == currentUser.getId()) {
+            System.out.println("sada" + content + "asdas");
+            return MybbsUtil.getJSONString(400, "You should not send letter to yourself");
+        }
+        if (content.equals("")) {
+            return MybbsUtil.getJSONString(400, "The content is empty");
         }
 
         // 构造Message对象
         Message message = new Message();
-        message.setFromId(hostHolder.getUser().getId());
+        message.setFromId(currentUser.getId());
         message.setToId(receiver.getId());
         // 拼接会话Id，要求Id小的在前
         if (message.getFromId() < message.getToId())
@@ -130,7 +138,7 @@ public class MessageController {
         message.setStatus(0);
         messageService.addMessage(message);
 
-        return MybbsUtil.getJSONString(0);
+        return MybbsUtil.getJSONString(200, "The message has been sent");
     }
 
     /**
@@ -155,6 +163,7 @@ public class MessageController {
 
         if (messageList != null) {
             for (Message message : messageList) {
+                // 筛选条件有两个，该信息状态是未读的，并且当前用户是发送方。
                 if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
                     ids.add(message.getId());
                 }
