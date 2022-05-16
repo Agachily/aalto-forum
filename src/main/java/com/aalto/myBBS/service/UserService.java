@@ -198,4 +198,8 @@ public class UserService implements MybbsConstant {
         userMapper.updatePassword(user.getId(), newpassword);
         return null;
     }
+
+    public User findUserByName(String username) {
+        return userMapper.selectByName(username);
+    }
 }

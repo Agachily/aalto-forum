@@ -6,17 +6,16 @@ import com.aalto.myBBS.service.entity.Message;
 import com.aalto.myBBS.service.entity.Page;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.util.HostHolder;
+import com.aalto.myBBS.util.MybbsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class MessageController {
@@ -100,7 +99,38 @@ public class MessageController {
         // 获取与用户进行通信的User对象
         model.addAttribute("target", getLetterTarget(conversationId));
 
+        // 将用户所查看的信息设置为已读
+        List<Integer> messageIds = getMessageIds(letterList);
+        if (!messageIds.isEmpty()) {
+            messageService.checkMessage(messageIds);
+        }
+
         return "/site/letter-detail";
+    }
+
+    @RequestMapping(path = "/letter/send", method = RequestMethod.POST)
+    @ResponseBody
+    public String sendLetter(String receiverName, String content) {
+        User receiver = userService.findUserByName(receiverName);
+        if (receiver ==  null) {
+            return MybbsUtil.getJSONString(1, "The receiver does not exist");
+        }
+
+        // 构造Message对象
+        Message message = new Message();
+        message.setFromId(hostHolder.getUser().getId());
+        message.setToId(receiver.getId());
+        // 拼接会话Id，要求Id小的在前
+        if (message.getFromId() < message.getToId())
+            message.setConversationId(message.getFromId() + "_" + message.getToId());
+        else
+            message.setConversationId(message.getToId() + "_" + message.getFromId());
+        message.setContent(content);
+        message.setCreateTime(new Date());
+        message.setStatus(0);
+        messageService.addMessage(message);
+
+        return MybbsUtil.getJSONString(0);
     }
 
     /**
@@ -118,5 +148,19 @@ public class MessageController {
         } else {
             return userService.findUserById(id0);
         }
+    }
+
+    private List<Integer> getMessageIds(List<Message> messageList) {
+        List<Integer> ids = new ArrayList<>();
+
+        if (messageList != null) {
+            for (Message message : messageList) {
+                if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
+                    ids.add(message.getId());
+                }
+            }
+        }
+
+        return ids;
     }
 }
