@@ -33,7 +33,7 @@ public class ExceptionAdvice {
         // For different request type, response different result
         String xRequestedWith = request.getHeader("x-requested-with");
         if ("XMLHttpRequest".equals(xRequestedWith)) {
-            response.setContentType("application/plain;charset=utf-8");
+            response.setContentType("application/json;charset=utf-8");
             PrintWriter writer = null;
             writer = response.getWriter();
             writer.write(MybbsUtil.getJSONString(500, "There is something wrong with the server"));

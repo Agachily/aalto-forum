@@ -134,12 +134,12 @@ public class LoginController implements MybbsConstant {
         }
 
         int expiredSeconds = rememberme ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
-        // Call the userService class to dealt with the login issue
+        // Call the userService class to deal with the login issue
         Map<String, Object> map = userService.login(username, password, expiredSeconds);
 
         /* Judge is the login is successful */
         if (map.containsKey("ticket")) {
-            // Send the ticket to use clint as the cookie
+            // Send the ticket to use client as the cookie
             Cookie cookie = new Cookie("ticket", map.get("ticket").toString());
             // Specifies a path for the cookie to which the client should return the cookie.
             // The cookie is visible to all the pages in the directory you specify

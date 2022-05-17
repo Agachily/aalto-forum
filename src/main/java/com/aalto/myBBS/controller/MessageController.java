@@ -1,5 +1,6 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.annotation.LoginRequired;
 import com.aalto.myBBS.service.MessageService;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.service.entity.Message;
@@ -25,17 +26,18 @@ public class MessageController {
     @Autowired
     private UserService userService;
 
-    /** hostHolder用于获取当前登陆的用户的信息 */
+    /** hostHolder is used to get th information of current logged user */
     @Autowired
     private HostHolder hostHolder;
 
     /**
-     * 获取私信列表
+     * Get the letter list for a certain user
      * @param model
      * @param page
      * @return
      */
     @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
+    @LoginRequired
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
         // 分页信息，依旧是在Page对象中设置分页信息

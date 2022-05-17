@@ -18,8 +18,7 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // First judge whether the request that has been intercepted is a method, for it is also could be a request
-        // for static resource
+        // First judge whether the request that has been intercepted is a method, for it is also could be a request for static resource
         if (handler instanceof HandlerMethod) {
             HandlerMethod  handlerMethod = (HandlerMethod) handler;
             Method method = handlerMethod.getMethod();
