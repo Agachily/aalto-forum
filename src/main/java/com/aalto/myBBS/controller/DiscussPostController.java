@@ -1,5 +1,6 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.service.GiveLikeService;
 import com.aalto.myBBS.service.entity.Comment;
 import com.aalto.myBBS.service.entity.DiscussPost;
 import com.aalto.myBBS.service.entity.Page;
@@ -32,6 +33,9 @@ public class DiscussPostController implements MybbsConstant {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private GiveLikeService giveLikeService;
+
     // To return the JSON string, we should use the @RequestBody annotation and the String as the return type.
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -63,6 +67,14 @@ public class DiscussPostController implements MybbsConstant {
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user", user);
 
+        // 该帖子点赞数量
+        long likeNumberOfPost = giveLikeService.findLikeNumberOfEntity(ENTITY_TYPE_POST, id);
+        model.addAttribute("likeNumberOfPost", likeNumberOfPost);
+        // 如果用户没登陆，则直接显示赞，不显示已赞
+        long likeStatusOfPost = hostHolder.getUser() == null ? 0 :
+                giveLikeService.checkLikeStatusOfEntity(hostHolder.getUser().getId(), ENTITY_TYPE_POST, id);
+        model.addAttribute("likeStatusOfPost", likeStatusOfPost);
+
         // 评论分页信息
         page.setLimit(5);
         page.setPath("/discuss/detail/" + id);
@@ -81,6 +93,12 @@ public class DiscussPostController implements MybbsConstant {
                 commentToShow.put("comment", c);
                 // 该评论的作者
                 commentToShow.put("user", userService.findUserById(c.getUserId()));
+                // 评论的点赞数量
+                long likeNumberOfComment = giveLikeService.findLikeNumberOfEntity(ENTITY_TYPE_COMMENT, c.getId());
+                commentToShow.put("likeNumberOfComment", likeNumberOfComment);
+                long likeStatusOfComment = hostHolder.getUser() == null ? 0 :
+                        giveLikeService.checkLikeStatusOfEntity(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, c.getId());
+                commentToShow.put("likeStatusOfComment", likeStatusOfComment);
 
                 // 获取与该评论的相关的回复
                 List<Comment> replyList = commentService.findCommentsByEntity(
@@ -98,6 +116,12 @@ public class DiscussPostController implements MybbsConstant {
                         // 回复目标
                         User target = r.getTargetId() == 0 ? null : userService.findUserById(r.getTargetId());
                         replyToShow.put("target", target);
+                        // 回复的点赞
+                        likeNumberOfComment = giveLikeService.findLikeNumberOfEntity(ENTITY_TYPE_COMMENT, r.getId());
+                        replyToShow.put("likeNumberOfComment", likeNumberOfComment);
+                        likeStatusOfComment = hostHolder.getUser() == null ? 0 :
+                                giveLikeService.checkLikeStatusOfEntity(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, r.getId());
+                        replyToShow.put("likeStatusOfComment", likeStatusOfComment);
 
                         replyListToShow.add(replyToShow);
                     }

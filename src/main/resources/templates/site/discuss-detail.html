@@ -83,13 +83,16 @@
 						<div class="text-muted mt-3">
 							发布于 <b th:text="${#dates.format(post.createTime, 'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b>
 							<ul class="d-inline float-right">
-								<li class="d-inline ml-2"><a href="#" class="text-primary">赞 11</a></li>
+								<li class="d-inline ml-2"><a href="javascript:;" th:onclick="|giveLike(this, 1, ${post.id});|" class="text-primary">
+									<b th:text="${likeStatusOfPost==1 ? 'Like Given' : 'Like'}">赞</b>
+									<i th:text="${likeNumberOfPost}">11</i>
+								</a></li>
 								<li class="d-inline ml-2">|</li>
 								<li class="d-inline ml-2"><a href="#replyform" class="text-primary">回帖 <i th:text="${post.commentCount}"></i></a></li>
 							</ul>
 						</div>
 					</div>
-				</div>	
+				</div>
 				<!-- 正文 -->
 				<div class="mt-4 mb-3 content" th:utext="${post.content}">
 				</div>
@@ -126,7 +129,10 @@
 							<div class="mt-4 text-muted font-size-12">
 								<span>发布于 <b th:text="${#dates.format(cvo.comment.createTime, 'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</b></span>
 								<ul class="d-inline float-right">
-									<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
+									<li class="d-inline ml-2"><a href="javascript:;" th:onclick="|giveLike(this, 2, ${cvo.comment.id});|" class="text-primary">
+										<b th:text="${likeStatusOfComment == 1 ? 'Like Given' : 'Like'}">赞</b>
+										(<i th:text="${cvo.likeNumberOfComment}">1</i>)
+									</a></li>
 									<li class="d-inline ml-2">|</li>
 									<li class="d-inline ml-2"><a href="#" class="text-primary">回复(<i th:text="${cvo.replyCount}">2</i>)</a></li>
 								</ul>
@@ -149,7 +155,10 @@
 										<!--注意此处的时间需要格式化-->
 										<span th:text="${#dates.format(rvo.reply.createTime, 'yyyy-MM-dd HH:mm:ss')}">2019-04-15 15:32:18</span>
 										<ul class="d-inline float-right">
-											<li class="d-inline ml-2"><a href="#" class="text-primary">赞(1)</a></li>
+											<li class="d-inline ml-2"><a href="javascript:;" th:onclick="|giveLike(this, 2, ${rvo.reply.id});|" class="text-primary">
+												<b th:text="${rvo.likeStatusOfComment==1?'Like Given':'Like'}">赞</b>
+												(<i th:text="${rvo.likeNumberOfComment}">1</i>)
+											</a></li>
 											<li class="d-inline ml-2">|</li>
 											<li class="d-inline ml-2"><a th:href="|#reply-${rvoStat.count}|" data-toggle="collapse" class="text-primary">回复</a></li>
 										</ul>
@@ -169,7 +178,7 @@
 												</div>
 											</form>
 										</div>
-									</div>								
+									</div>
 								</li>
 								<!-- 回复输入框 -->
 								<li class="pb-3 pt-3">
@@ -275,5 +284,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
 	<script th:src="@{/js/global.js}"></script>
+	<script th:src="@{/js/discuss.js}"></script>
 </body>
 </html>

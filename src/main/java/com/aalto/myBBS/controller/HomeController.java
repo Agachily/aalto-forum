@@ -1,10 +1,12 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.service.GiveLikeService;
 import com.aalto.myBBS.service.entity.DiscussPost;
 import com.aalto.myBBS.service.entity.Page;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.DiscussPostService;
 import com.aalto.myBBS.service.UserService;
+import com.aalto.myBBS.util.MybbsConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements MybbsConstant {
     @Autowired
     private DiscussPostService discussPostService;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private GiveLikeService giveLikeService;
 
     @RequestMapping(path = "/index", method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page) {
@@ -39,6 +44,8 @@ public class HomeController {
                 User user = userService.findUserById(post.getUserId());
                 map.put("user", user);
                 map.put("post", post);
+                // Check how many like has been given to that post
+                map.put("likeNumber", giveLikeService.findLikeNumberOfEntity(ENTITY_TYPE_POST, post.getId()));
                 discussPosts.add(map);
             }
         }
