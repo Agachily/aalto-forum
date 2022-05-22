@@ -7,6 +7,9 @@ public class RedisUtil {
     private static final String PREFIX_USER_LIKE = "like:user";
     private static final String PREFIX_FOLLOWEE = "followee"; // Entity that you have followed
     private static final String PREFIX_FOLLOWER = "follower"; // Entity that follows you
+    private static final String PREFIX_KAPTCHA = "kaptcha";
+    private static final String PREFIX_TICKET = "ticket";
+    private static final String PREFIX_USER = "user";
 
     /**
      * This function is used to generate a key for a certain entity, in the form
@@ -46,5 +49,32 @@ public class RedisUtil {
      */
     public static String getFollowerKey(int entityType, int entityId) {
         return PREFIX_FOLLOWER + SPLIT + entityId + SPLIT + entityType;
+    }
+
+    /**
+     * 生成用于验证码的key
+     * @param ticket 给客户端的临时凭证
+     * @return
+     */
+    public static String getKaptchaKay(String ticket) {
+        return PREFIX_KAPTCHA + SPLIT + ticket;
+    }
+
+    /**
+     *
+     * @param ticket The ticket the user carrying when try to login
+     * @return
+     */
+    public static String getTicketKey(String ticket) {
+        return PREFIX_TICKET + SPLIT + ticket;
+    }
+
+    /**
+     * Get the key to identity the user
+     * @param UserId
+     * @return
+     */
+    public static String getUserKey(int userId) {
+        return PREFIX_USER + SPLIT + userId;
     }
 }

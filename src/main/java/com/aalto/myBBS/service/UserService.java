@@ -1,15 +1,16 @@
 package com.aalto.myBBS.service;
 
-import com.aalto.myBBS.dao.LoginTicketMapper;
 import com.aalto.myBBS.dao.UserMapper;
 import com.aalto.myBBS.service.entity.LoginTicket;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.util.MailClient;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.aalto.myBBS.util.MybbsUtil;
+import com.aalto.myBBS.util.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserService implements MybbsConstant {
@@ -31,7 +33,7 @@ public class UserService implements MybbsConstant {
     private TemplateEngine templateEngine;
 
     @Autowired
-    private LoginTicketMapper loginTicketMapper;
+    private RedisTemplate redisTemplate;
 
     @Value("${mybbs.path.domain}")
     private String domain;
@@ -41,7 +43,11 @@ public class UserService implements MybbsConstant {
 
 
     public User findUserById(int id) {
-        return userMapper.selectById(id);
+        User user = getCache(id);
+        if (user == null) {
+            user = initCache(id);
+        }
+        return user;
     }
 
 
@@ -124,6 +130,7 @@ public class UserService implements MybbsConstant {
         } else if (user.getActivationCode().equals(code)) {
             // We need to set the status to be 1 to denote the success of activation
             userMapper.updateStatus(userId, 1);
+            clearCache(userId);
             return ACTIVATION_SUCCESS;
         } else {
             return ACTIVATION_FAILURE;
@@ -162,18 +169,23 @@ public class UserService implements MybbsConstant {
         loginTicket.setTicket(MybbsUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
-        loginTicketMapper.insertLoginTicket(loginTicket);
+        String ticketKey = RedisUtil.getTicketKey(loginTicket.getTicket());
+        redisTemplate.opsForValue().set(ticketKey, loginTicket); // Store the ticket to redis
 
         map.put("ticket", loginTicket.getTicket());
         return map;
     }
 
     public void logout(String ticket) {
-        loginTicketMapper.updateStatus(ticket,1);
+        String ticketKey = RedisUtil.getTicketKey(ticket);
+        LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
+        loginTicket.setStatus(1);
+        redisTemplate.opsForValue().set(ticketKey, loginTicket);
     }
 
     public LoginTicket findLoginTicket(String ticket) {
-        return loginTicketMapper.selectByTicket(ticket);
+        String ticketKey = RedisUtil.getTicketKey(ticket);
+        return (LoginTicket) redisTemplate.opsForValue().get(ticketKey);
     }
 
     /**
@@ -183,7 +195,9 @@ public class UserService implements MybbsConstant {
      * @return
      */
     public int updateHeader(int userId, String headerUrl) {
-        return userMapper.updateHeader(userId, headerUrl);
+        int updateRows = userMapper.updateHeader(userId, headerUrl);
+        clearCache(userId);
+        return updateRows;
     }
 
     public Map<String, Object> resetPassword(User user, String oldpassword, String newpassword) {
@@ -201,5 +215,22 @@ public class UserService implements MybbsConstant {
 
     public User findUserByName(String username) {
         return userMapper.selectByName(username);
+    }
+
+    private User getCache(int userId) {
+        String userKey = RedisUtil.getUserKey(userId);
+        return (User) redisTemplate.opsForValue().get(userKey); // User对象会自动从JSON字符串转换为User对象
+    }
+
+    private User initCache(int userId) {
+        User user = userMapper.selectById(userId);
+        String userKey = RedisUtil.getUserKey(userId);
+        redisTemplate.opsForValue().set(userKey, user, 2, TimeUnit.HOURS);
+        return user;
+    }
+
+    private void clearCache(int userId) {
+        String userKey = RedisUtil.getUserKey(userId);
+        redisTemplate.delete(userKey);
     }
 }

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
  * This interface is for all the operations related to the login ticket
  */
 @Mapper
+@Deprecated
 public interface LoginTicketMapper {
 
     @Insert({"insert into login_ticket (user_id, ticket, status, expired) ",
