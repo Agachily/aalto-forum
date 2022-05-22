@@ -1,7 +1,7 @@
-const giveLike = (btn, entityType, entityId) => {
+const giveLike = (btn, entityType, entityId, entityUserId) => {
     $.post(
         CONTEXT_PATH + "/like",
-        {"entityType": entityType, "entityId": entityId},
+        {"entityType": entityType, "entityId": entityId, "entityUserId":entityUserId},
         (data) => {
             data = $.parseJSON(data);
             if (data.code === 200) {

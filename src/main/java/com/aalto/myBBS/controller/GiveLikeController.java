@@ -22,10 +22,10 @@ public class GiveLikeController {
 
     @RequestMapping(path = "like", method = RequestMethod.POST)
     @ResponseBody
-    public String giveOrCancelLike(int entityType, int entityId) {
+    public String giveOrCancelLike(int entityType, int entityId, int entityUserId) {
         // Get the current user
         User user = hostHolder.getUser();
-        giveLikeService.giveOrCancelLike(user.getId(), entityType, entityId);
+        giveLikeService.giveOrCancelLike(user.getId(), entityType, entityId, entityUserId);
 
         long likeNumberOfEntity = giveLikeService.findLikeNumberOfEntity(entityType, entityId);
         int status = giveLikeService.checkLikeStatusOfEntity(user.getId(), entityType, entityId);

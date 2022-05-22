@@ -2,7 +2,10 @@ package com.aalto.myBBS.service;
 
 import com.aalto.myBBS.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,23 +17,33 @@ public class GiveLikeService {
     /**
      * The method implements the service of giving / canceling like to a certain entity.
      * We use set for storing the data. The userId of the people who gives like will be
-     * stored in the set.
+     * stored in the set. 在对某一个实体点赞的时候同时也视为对该实体的用户点赞。
      * @param userId
      * @param entityType
      * @param entityId
+     * @param entityUserId 该实体（帖子 / 评论）的作者
      */
-    public void giveOrCancelLike(int userId, int entityType, int entityId) {
-        // Get the key for a certain entity
-        String entityLikeKey = RedisUtil.getKey(entityType, entityId);
-        // Judge whether the user has given like to that entity
-        Boolean isGiven = redisTemplate.opsForSet().isMember(entityLikeKey, userId);
-        if (isGiven) {
-            // If the like is given by the user, remove it, corresponding to the canceling operation
-            redisTemplate.opsForSet().remove(entityLikeKey, userId);
-        } else {
-            // If the like is not given by the user, add it
-            redisTemplate.opsForSet().add(entityLikeKey, userId);
-        }
+    public void giveOrCancelLike(int userId, int entityType, int entityId, int entityUserId) {
+        redisTemplate.execute(new SessionCallback() {
+            @Override
+            public Object execute(RedisOperations operations) throws DataAccessException {
+                String entityKey = RedisUtil.getKey(entityType, entityId);
+                String userKey = RedisUtil.getKeyForUser(entityUserId);
+
+                // 判断当前用户是否已经对该实体点过赞了，如果已经点过赞了，那么再次点击则视为取消
+                Boolean isMember = operations.opsForSet().isMember(entityKey, userId);
+                // 开启事务
+                operations.multi();
+                if (isMember) {
+                    operations.opsForSet().remove(entityKey, userId);
+                    operations.opsForValue().decrement(userKey);
+                } else {
+                    operations.opsForSet().add(entityKey, userId);
+                    operations.opsForValue().increment(userKey);
+                }
+                return operations.exec();
+            }
+        });
     }
 
     /**
@@ -54,5 +67,12 @@ public class GiveLikeService {
     public int checkLikeStatusOfEntity(int userId, int entityType, int entityId) {
         String entityLikeKey = RedisUtil.getKey(entityType, entityId);
         return redisTemplate.opsForSet().isMember(entityLikeKey, userId) ? 1 : 0;
+    }
+
+    // 查询某个用户获得的赞的数量
+    public int findUserLikeNumber(int userId) {
+        String keyForUser = RedisUtil.getKeyForUser(userId);
+        Integer count = (Integer) redisTemplate.opsForValue().get(keyForUser);
+        return count == null ? 0 : count.intValue();
     }
 }

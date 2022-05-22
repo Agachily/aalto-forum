@@ -1,6 +1,7 @@
 package com.aalto.myBBS.controller;
 
 import com.aalto.myBBS.annotation.LoginRequired;
+import com.aalto.myBBS.service.GiveLikeService;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
@@ -44,6 +45,9 @@ public class UserController {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private GiveLikeService giveLikeService;
 
     /**
      * Define the method to response the user with the setting page
@@ -142,4 +146,22 @@ public class UserController {
             return "/site/setting";
         }
     }
+
+    // 访问个人主页
+    @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("The user does not exist");
+        }
+
+        // 设置用户
+        model.addAttribute("user", user);
+        // 点赞数量
+        int userLikeNumber = giveLikeService.findUserLikeNumber(userId);
+        model.addAttribute("likeNumber", userLikeNumber);
+
+        return "/site/profile";
+    }
+
 }
