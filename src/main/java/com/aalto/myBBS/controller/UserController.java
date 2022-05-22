@@ -1,10 +1,12 @@
 package com.aalto.myBBS.controller;
 
 import com.aalto.myBBS.annotation.LoginRequired;
+import com.aalto.myBBS.service.FollowService;
 import com.aalto.myBBS.service.GiveLikeService;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
+import com.aalto.myBBS.util.MybbsConstant;
 import com.aalto.myBBS.util.MybbsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
-public class UserController {
+public class UserController implements MybbsConstant {
     // Define the logger for recording
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -48,6 +50,9 @@ public class UserController {
 
     @Autowired
     private GiveLikeService giveLikeService;
+
+    @Autowired
+    private FollowService followService;
 
     /**
      * Define the method to response the user with the setting page
@@ -160,8 +165,19 @@ public class UserController {
         // 点赞数量
         int userLikeNumber = giveLikeService.findUserLikeNumber(userId);
         model.addAttribute("likeNumber", userLikeNumber);
+        // 关注用户数量
+        long followeeCount = followService.findFolloweeCount(userId, ENTITY_TYPE_USER);
+        model.addAttribute("followeeCount", followeeCount);
+        // 粉丝数量
+        long followerCount = followService.findFollowerCount(ENTITY_TYPE_USER, userId);
+        model.addAttribute("followerCount", followerCount);
+        // 当前登陆的用户是否已经关注该用户
+        boolean hasFollowed = false;
+        if (hostHolder.getUser() != null) {
+            hasFollowed = followService.hasFollowed(hostHolder.getUser().getId(), ENTITY_TYPE_USER, userId);
+        }
+        model.addAttribute("hasFollowed", hasFollowed);
 
         return "/site/profile";
     }
-
 }
