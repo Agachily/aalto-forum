@@ -45,6 +45,7 @@ public class EventConsumer implements MybbsConstant {
         content.put("entityType", event.getEntityType());
         content.put("entityId", event.getEntityId());
 
+        // 将Event中的Map集合中的数据也存入到Content中
         if (!event.getData().isEmpty()) {
             for (Map.Entry<String, Object> entry : event.getData().entrySet()) {
                 content.put(entry.getKey(), entry.getValue());

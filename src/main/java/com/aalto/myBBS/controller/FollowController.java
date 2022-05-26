@@ -41,7 +41,7 @@ public class FollowController implements MybbsConstant {
         followService.follow(user.getId(), entityType, entityId);
 
         Event event = new Event()
-                .setTopic(TOPIC_LIKE)
+                .setTopic(TOPIC_FOLLOW)
                 .setUserId(hostHolder.getUser().getId())
                 .setEntityType(entityType)
                 .setEntityId(entityId)
