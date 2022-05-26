@@ -28,5 +28,28 @@ public interface MybbsConstant {
      */
     int ENTITY_TYPE_COMMENT = 2;
 
+    /**
+     * Entity type: user
+     */
     int ENTITY_TYPE_USER = 3;
+
+    /**
+     * Topic type: comment
+     */
+    String TOPIC_COMMENT = "comment";
+
+    /**
+     * Topic type: like
+     */
+    String TOPIC_LIKE = "like";
+
+    /**
+     * Topic type: follow
+     */
+    String TOPIC_FOLLOW = "follow";
+
+    /**
+     * The Id of system user
+     */
+    int SYSTEM_USER_ID = 1;
 }

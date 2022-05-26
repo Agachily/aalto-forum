@@ -1,7 +1,9 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.Event.EventProducer;
 import com.aalto.myBBS.service.FollowService;
 import com.aalto.myBBS.service.UserService;
+import com.aalto.myBBS.service.entity.Event;
 import com.aalto.myBBS.service.entity.Page;
 import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.util.HostHolder;
@@ -29,11 +31,23 @@ public class FollowController implements MybbsConstant {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     @RequestMapping(path = "/follow", method = RequestMethod.POST)
     @ResponseBody
     public String follow(int entityType, int entityId) {
         User user = hostHolder.getUser();
         followService.follow(user.getId(), entityType, entityId);
+
+        Event event = new Event()
+                .setTopic(TOPIC_LIKE)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
+
         return MybbsUtil.getJSONString(200, "Following");
     }
 

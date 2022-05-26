@@ -31,7 +31,8 @@ public class ServiceLogAspect {
     public void before(JoinPoint joinPoint) {
         // Record a log when user access a certain service
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert attributes != null;
+        if (attributes == null)
+            return;
         HttpServletRequest request = attributes.getRequest();
         String remoteHost = request.getRemoteHost();
         String currentTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
