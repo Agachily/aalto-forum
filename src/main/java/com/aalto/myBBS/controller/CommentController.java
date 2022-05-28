@@ -68,6 +68,16 @@ public class CommentController implements MybbsConstant {
         /* Send the Event to Kafka */
         eventProducer.fireEvent(event);
 
+        // 当对帖子进行评论的时候，帖子对象中存储的评论数量这一数据会发生改变，因此我们需要更新ES中存储的帖子内容
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            event = new Event()
+                    .setTopic(TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(ENTITY_TYPE_POST)
+                    .setEntityId(id);
+            eventProducer.fireEvent(event);
+        }
+
         // 依旧跳转到当前帖子页面
         return "redirect:/discuss/detail/" + id;
     }

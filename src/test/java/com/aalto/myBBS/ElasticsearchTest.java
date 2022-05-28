@@ -127,7 +127,7 @@ public class ElasticsearchTest {
         //构建搜索条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
                 //在discusspost索引的title和content字段中都查询“互联网寒冬”
-                .query(QueryBuilders.multiMatchQuery("offer", "title", "content"))
+                .query(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
                 // matchQuery是模糊查询，会对key进行分词：searchSourceBuilder.query(QueryBuilders.matchQuery(key,value));
                 // termQuery是精准查询：searchSourceBuilder.query(QueryBuilders.termQuery(key,value));
                 // 对查询到的数据进行排序
@@ -141,7 +141,9 @@ public class ElasticsearchTest {
 
         searchRequest.source(searchSourceBuilder);
         SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-        System.out.println(JSONObject.toJSON(searchResponse));
+        //System.out.println(searchSourceBuilder.size());
+        //System.out.println(JSONObject.toJSON(searchResponse));
+        System.out.println(searchResponse.getHits().getHits().length);
 
         List<DiscussPost> list = new LinkedList<>();
         for (SearchHit hit : searchResponse.getHits().getHits()) {
@@ -155,7 +157,7 @@ public class ElasticsearchTest {
     public void highlightQuery() throws Exception{
         SearchRequest searchRequest = new SearchRequest("discusspost");//discusspost是索引名，就是表名
 
-        //设置高量显示
+        //高亮
         HighlightBuilder highlightBuilder = new HighlightBuilder();
         highlightBuilder.field("title");
         highlightBuilder.field("content");
@@ -165,7 +167,7 @@ public class ElasticsearchTest {
 
         //构建搜索条件
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-                .query(QueryBuilders.multiMatchQuery("offer", "title", "content"))
+                .query(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
                 .sort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .sort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .sort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
@@ -180,8 +182,8 @@ public class ElasticsearchTest {
         for (SearchHit hit : searchResponse.getHits().getHits()) {
             DiscussPost discussPost = JSONObject.parseObject(hit.getSourceAsString(), DiscussPost.class);
 
-            /* 处理高亮显示的内容 */
-            HighlightField titleField = hit.getHighlightFields().get("title"); // 获取与title相关的高亮显示的内容
+            // 处理高亮显示的结果
+            HighlightField titleField = hit.getHighlightFields().get("title");
             if (titleField != null) {
                 discussPost.setTitle(titleField.getFragments()[0].toString());
             }
@@ -189,8 +191,8 @@ public class ElasticsearchTest {
             if (contentField != null) {
                 discussPost.setContent(contentField.getFragments()[0].toString());
             }
-            //System.out.println(discussPost);
-            list.add(discussPost); //处理好的结果放在集合中
+            System.out.println(discussPost);
+            list.add(discussPost);
         }
     }
 }

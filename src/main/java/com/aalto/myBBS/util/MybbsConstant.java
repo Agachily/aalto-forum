@@ -49,6 +49,11 @@ public interface MybbsConstant {
     String TOPIC_FOLLOW = "follow";
 
     /**
+     * Topic type: publish
+     */
+    String TOPIC_PUBLISH = "publish";
+
+    /**
      * The Id of system user
      */
     int SYSTEM_USER_ID = 1;

@@ -1,10 +1,8 @@
 package com.aalto.myBBS.controller;
 
+import com.aalto.myBBS.Event.EventProducer;
 import com.aalto.myBBS.service.GiveLikeService;
-import com.aalto.myBBS.service.entity.Comment;
-import com.aalto.myBBS.service.entity.DiscussPost;
-import com.aalto.myBBS.service.entity.Page;
-import com.aalto.myBBS.service.entity.User;
+import com.aalto.myBBS.service.entity.*;
 import com.aalto.myBBS.service.CommentService;
 import com.aalto.myBBS.service.DiscussPostService;
 import com.aalto.myBBS.service.UserService;
@@ -36,6 +34,9 @@ public class DiscussPostController implements MybbsConstant {
     @Autowired
     private GiveLikeService giveLikeService;
 
+    @Autowired
+    private EventProducer eventProducer;
+
     // To return the JSON string, we should use the @RequestBody annotation and the String as the return type.
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -50,6 +51,14 @@ public class DiscussPostController implements MybbsConstant {
         post.setContent(content);
         post.setCreateTime(new Date());
         discussPostService.addDiscussPost(post);
+
+        // 将新发布的帖子存储到ES中
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(post.getId());
+        eventProducer.fireEvent(event);
 
         // The error will be processed in the future
         return MybbsUtil.getJSONString(200, "The post has been released");

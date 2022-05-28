@@ -1,6 +1,9 @@
 package com.aalto.myBBS.Event;
 
+import com.aalto.myBBS.service.DiscussPostService;
+import com.aalto.myBBS.service.ElasticsearchService;
 import com.aalto.myBBS.service.MessageService;
+import com.aalto.myBBS.service.entity.DiscussPost;
 import com.aalto.myBBS.service.entity.Event;
 import com.aalto.myBBS.service.entity.Message;
 import com.aalto.myBBS.util.MybbsConstant;
@@ -24,13 +27,24 @@ public class EventConsumer implements MybbsConstant {
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private DiscussPostService discussPostService;
+
+    @Autowired
+    private ElasticsearchService elasticsearchService;
+
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_FOLLOW, TOPIC_LIKE})
     public void handleCommentMessage(ConsumerRecord record) {
         if(record == null || record.value() == null) {
             logger.error("The obtained message is empty");
+            return;
         }
 
         Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if(event == null) {
+            logger.error("The message format is not correct");
+            return;
+        }
 
         /* The system should send message to the user in the background */
         Message message = new Message();
@@ -56,5 +70,25 @@ public class EventConsumer implements MybbsConstant {
         message.setContent(JSONObject.toJSONString(content));
         /* Add the message to database */
         messageService.addMessage(message);
+    }
+
+    /**
+     * 消费发帖事件
+     */
+    @KafkaListener(topics = {TOPIC_PUBLISH})
+    public void handlePublishMessage(ConsumerRecord record) {
+        if(record == null || record.value() == null) {
+            logger.error("The obtained message is empty");
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if(event == null) {
+            logger.error("The message format is not correct");
+            return;
+        }
+
+        /* 从MySQL中查询出帖子数据，并存储到ES中 */
+        DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId());
+        elasticsearchService.saveDiscussPost(post);
     }
 }
