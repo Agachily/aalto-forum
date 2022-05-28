@@ -32,7 +32,8 @@
         </if>
     </select>
 
-    <insert id="insertDiscussPost" parameterType="DiscussPost">
+    <!--在keyProperty中声明字段id为主键，这样Mybatis在添加完数据后，会自动将返回的主键设置到对象中去。-->
+    <insert id="insertDiscussPost" parameterType="DiscussPost" keyProperty="id">
         <!--注意此处所插入的变量值要和对象中的字段名称所对应-->
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
