@@ -41,6 +41,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 hostHolder.setUser(user);
                 /* 构建用户认证的结构，并存入SecurityContext，以便于Spring Security进行授权 */
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
+                        /* 查找当前用户所具有的权限 */
                         user, user.getPassword(), userService.getAuthorities(user.getId())
                 );
                 SecurityContextHolder.setContext(new SecurityContextImpl(authentication));

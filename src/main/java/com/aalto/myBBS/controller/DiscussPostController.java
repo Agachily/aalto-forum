@@ -150,4 +150,64 @@ public class DiscussPostController implements MybbsConstant {
 
         return "/site/discuss-detail";
     }
+
+    /**
+     * 置顶帖子
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/top", method = RequestMethod.POST)
+    @ResponseBody
+    public String setTop(int id) {
+        discussPostService.updateType(id, 1);
+        /* 帖子状态发生了变化，需要将其同步到Elasticsearch中 */
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return MybbsUtil.getJSONString(200, "The type of post is updated");
+    }
+
+    /**
+     * 加精
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/wonderful", method = RequestMethod.POST)
+    @ResponseBody
+    public String setWonderful(int id) {
+        discussPostService.updateStatus(id, 1);
+        /* 帖子状态发生了变化，需要将其同步到Elasticsearch中 */
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return MybbsUtil.getJSONString(200, "The status of post is updated");
+    }
+
+    /**
+     * 删除，即将帖子设置为删除状态，并不是从数据库中删除
+     * @param id
+     * @return
+     */
+    @RequestMapping(path = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public String setDelete(int id) {
+        discussPostService.updateStatus(id, 2);
+        /* 帖子状态发生了变化，需要将其同步到Elasticsearch中 */
+        Event event = new Event()
+                .setTopic(TOPIC_DELETE)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(id);
+        eventProducer.fireEvent(event);
+
+        return MybbsUtil.getJSONString(200, "The post is deleted");
+    }
 }

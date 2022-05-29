@@ -54,6 +54,11 @@ public interface MybbsConstant {
     String TOPIC_PUBLISH = "publish";
 
     /**
+     * Topic type: delete
+     */
+    String TOPIC_DELETE = "delete";
+
+    /**
      * The Id of system user
      */
     int SYSTEM_USER_ID = 1;

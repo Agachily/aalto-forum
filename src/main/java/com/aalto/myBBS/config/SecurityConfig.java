@@ -36,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Mybb
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/user/setting",
+                .antMatchers("/user/setting", // 添加需要控制访问的路径
                         "/user/upload",
                         "/discuss/add",
                         "/comment/add/**",
@@ -45,7 +45,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Mybb
                         "/like",
                         "/follow",
                         "/unfollow")
-                .hasAnyAuthority(AUTHORITY_USER, AUTHORITY_ADMIN, AUTHORITY_MODERATOR)
+                .hasAnyAuthority(
+                        AUTHORITY_USER,
+                        AUTHORITY_ADMIN,
+                        AUTHORITY_MODERATOR
+                )
+                .antMatchers("/discuss/top",
+                        "/discuss/wonderful")
+                .hasAnyAuthority(
+                        AUTHORITY_MODERATOR
+                ) // 设置只有版主才能进行置顶和加精操作
+                .antMatchers("/discuss/delete")
+                .hasAnyAuthority(
+                        AUTHORITY_ADMIN
+                ) // 设置管理员才能删除帖子
                 .anyRequest().permitAll() // 除了以上那些路径之外，其余任何请求都允许
                 .and().csrf().disable(); // 禁用csrf
 
@@ -53,11 +66,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Mybb
         http.exceptionHandling()
                 .authenticationEntryPoint(new AuthenticationEntryPoint() {
                     @Override
-                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+                    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
                         String xRequestedWith = request.getHeader("x-requested-with");
                         /* 如果是异步请求，则返回JSON字符串 */
                         if ("XMLHttpRequest".equals(xRequestedWith)) {
-                            response.setContentType("application/json;charset=utf-8");
+                            response.setContentType("application/plain;charset=utf-8");
                             PrintWriter writer = response.getWriter();
                             writer.write(MybbsUtil.getJSONString(403, "Login Required"));
                         } else {

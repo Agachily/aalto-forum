@@ -14,7 +14,12 @@ function send_letter() {
 		CONTEXT_PATH + "/letter/send",
 		{"receiverName": receiverName, "content": content},
 		function (data) {
-			data = $.parseJSON(data);
+			let type = typeof data
+			if (type === "string") {
+				data = $.parseJSON(data);
+			} else {
+				data = $.parseJSON(JSON.stringify(data));
+			}
 			// 根据所返回的数据来显示相应的信息
 			if (data.code === 200) {
 				$("#hintBody").text("Message is send successfully");

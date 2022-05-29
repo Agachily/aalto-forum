@@ -10,7 +10,12 @@ function follow() {
 			CONTEXT_PATH + "/follow",
 			{"entityType": 3, "entityId":$(btn).prev().val()},
 			(data) => {
-				data = $.parseJSON(data);
+				let type = typeof data
+				if (type === "string") {
+					data = $.parseJSON(data);
+				} else {
+					data = $.parseJSON(JSON.stringify(data));
+				}
 				if (data.code === 200) {
 					window.location.reload();
 				} else {
@@ -25,7 +30,12 @@ function follow() {
 			CONTEXT_PATH + "/unfollow",
 			{"entityType": 3, "entityId": $(btn).prev().val()},
 			(data) => {
-				data = $.parseJSON(data);
+				let type = typeof data
+				if (type === "string") {
+					data = $.parseJSON(data);
+				} else {
+					data = $.parseJSON(JSON.stringify(data));
+				}
 				if (data.code === 200) {
 					window.location.reload();
 				} else {

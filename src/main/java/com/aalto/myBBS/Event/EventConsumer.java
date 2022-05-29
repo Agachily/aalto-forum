@@ -79,6 +79,7 @@ public class EventConsumer implements MybbsConstant {
     public void handlePublishMessage(ConsumerRecord record) {
         if(record == null || record.value() == null) {
             logger.error("The obtained message is empty");
+            return;
         }
 
         Event event = JSONObject.parseObject(record.value().toString(), Event.class);
@@ -90,5 +91,22 @@ public class EventConsumer implements MybbsConstant {
         /* 从MySQL中查询出帖子数据，并存储到ES中 */
         DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId());
         elasticsearchService.saveDiscussPost(post);
+    }
+
+    @KafkaListener(topics = {TOPIC_DELETE})
+    public void handleDeleteMessage(ConsumerRecord record) {
+        if(record == null || record.value() == null) {
+            logger.error("The obtained message is empty");
+            return;
+        }
+
+        Event event = JSONObject.parseObject(record.value().toString(), Event.class);
+        if(event == null) {
+            logger.error("The message format is not correct");
+            return;
+        }
+
+        /* 从ES中删除帖子 */
+        elasticsearchService.deleteDiscussPost(event.getEntityId());
     }
 }
