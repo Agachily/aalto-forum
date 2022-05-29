@@ -26,7 +26,7 @@ public class GiveLikeController implements MybbsConstant {
     @Autowired
     private EventProducer eventProducer;
 
-    @RequestMapping(path = "like", method = RequestMethod.POST)
+    @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
     public String giveOrCancelLike(int entityType, int entityId, int entityUserId, int postId) {
         // Get the current user

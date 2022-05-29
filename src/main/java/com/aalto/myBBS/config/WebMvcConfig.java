@@ -14,8 +14,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private LoginTicketInterceptor loginTicketInterceptor;
 
-    @Autowired
-    private LoginRequiredInterceptor loginRequiredInterceptor;
+    /* 重构项目，使用Spring Security来进行权限管理，因此将之前的拦截器废弃 */
+    // @Autowired
+    // private LoginRequiredInterceptor loginRequiredInterceptor;
 
     @Autowired
     private MessageInterceptor messageInterceptor;
@@ -24,8 +25,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
-        registry.addInterceptor(loginRequiredInterceptor)
-                .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
+        // registry.addInterceptor(loginRequiredInterceptor)
+                // .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
         registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
     }

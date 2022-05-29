@@ -43,6 +43,13 @@ public class ElasticsearchService {
         discussPostRepository.deleteById(id);
     }
 
+    /**
+     * 根据指定的关键字对帖子进行搜索，并设置高亮
+     * @param keyword
+     * @param start
+     * @param limit
+     * @return
+     */
     public Map<String, Object> searchDiscussPost(String keyword, int start, int limit){
         SearchRequest searchRequest = new SearchRequest("discusspost");//discusspost是索引名，就是表名
 
