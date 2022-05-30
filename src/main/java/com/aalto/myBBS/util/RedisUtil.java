@@ -10,6 +10,8 @@ public class RedisUtil {
     private static final String PREFIX_KAPTCHA = "kaptcha";
     private static final String PREFIX_TICKET = "ticket";
     private static final String PREFIX_USER = "user";
+    private static final String PREFIX_UV = "uv";
+    private static final String PREFIX_DAU = "dau";
 
     /**
      * This function is used to generate a key for a certain entity, in the form
@@ -71,10 +73,38 @@ public class RedisUtil {
 
     /**
      * Get the key to identity the user
-     * @param UserId
+     * @param userId
      * @return
      */
     public static String getUserKey(int userId) {
         return PREFIX_USER + SPLIT + userId;
+    }
+
+    /**
+     * 生成一个UV Key，用于记录单日数据
+     */
+    public static String getUVKey(String date) {
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    /**
+     * 区间UV
+     */
+    public static String getUVKey(String startDate, String endDate) {
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    /**
+     * 用于统计单日活跃用户的key
+     */
+    public static String getDAUKey(String date) {
+        return PREFIX_DAU + SPLIT + date;
+    }
+
+    /**
+     * 用于统计一个区间内活跃用户的key
+     */
+    public static String getDAUKey(String startDate, String endDate) {
+        return PREFIX_DAU + SPLIT + startDate + SPLIT +endDate;
     }
 }

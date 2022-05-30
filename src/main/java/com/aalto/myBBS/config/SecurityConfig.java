@@ -55,7 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Mybb
                 .hasAnyAuthority(
                         AUTHORITY_MODERATOR
                 ) // 设置只有版主才能进行置顶和加精操作
-                .antMatchers("/discuss/delete")
+                .antMatchers("/discuss/delete",
+                        "/data/**")
                 .hasAnyAuthority(
                         AUTHORITY_ADMIN
                 ) // 设置管理员才能删除帖子

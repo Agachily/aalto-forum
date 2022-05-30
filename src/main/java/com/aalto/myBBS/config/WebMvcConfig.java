@@ -1,5 +1,6 @@
 package com.aalto.myBBS.config;
 
+import com.aalto.myBBS.controller.interceptor.DataInterceptor;
 import com.aalto.myBBS.controller.interceptor.LoginRequiredInterceptor;
 import com.aalto.myBBS.controller.interceptor.LoginTicketInterceptor;
 import com.aalto.myBBS.controller.interceptor.MessageInterceptor;
@@ -21,6 +22,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private MessageInterceptor messageInterceptor;
 
+    @Autowired
+    private DataInterceptor dataInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginTicketInterceptor)
@@ -29,6 +33,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 // .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
         registry.addInterceptor(messageInterceptor)
                 .excludePathPatterns("/**/*.css","/**/*.js","/**/*.jpg","/**/*.jpeg", "/**/*.png");
+
+        registry.addInterceptor(dataInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 
 
