@@ -12,6 +12,7 @@ public class RedisUtil {
     private static final String PREFIX_USER = "user";
     private static final String PREFIX_UV = "uv";
     private static final String PREFIX_DAU = "dau";
+    private static final String PREFIX_POST = "post";
 
     /**
      * This function is used to generate a key for a certain entity, in the form
@@ -106,5 +107,13 @@ public class RedisUtil {
      */
     public static String getDAUKey(String startDate, String endDate) {
         return PREFIX_DAU + SPLIT + startDate + SPLIT +endDate;
+    }
+
+    /**
+     * 生成一个Key，用于存储所有要重新计算分数的key
+     * @return
+     */
+    public static String getPostScoreKey() {
+        return PREFIX_POST + SPLIT + "score";
     }
 }

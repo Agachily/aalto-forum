@@ -8,7 +8,9 @@ import com.aalto.myBBS.service.entity.DiscussPost;
 import com.aalto.myBBS.service.entity.Event;
 import com.aalto.myBBS.util.HostHolder;
 import com.aalto.myBBS.util.MybbsConstant;
+import com.aalto.myBBS.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,9 @@ public class CommentController implements MybbsConstant {
      */
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 添加Comment
@@ -76,10 +81,12 @@ public class CommentController implements MybbsConstant {
                     .setEntityType(ENTITY_TYPE_POST)
                     .setEntityId(id);
             eventProducer.fireEvent(event);
+
+            String redisKey = RedisUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, id);
         }
 
         // 依旧跳转到当前帖子页面
         return "redirect:/discuss/detail/" + id;
     }
-
 }

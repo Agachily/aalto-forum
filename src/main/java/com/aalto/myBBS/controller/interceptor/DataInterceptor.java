@@ -25,7 +25,7 @@ public class DataInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 统计UV
-        String ip = request.getRemoteHost();
+        String ip = request.getRemoteHost(); // 获取请求的ip地址
         dataService.recordUV(ip);
 
         // 统计DAU

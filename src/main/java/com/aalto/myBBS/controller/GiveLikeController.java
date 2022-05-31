@@ -7,7 +7,9 @@ import com.aalto.myBBS.service.entity.User;
 import com.aalto.myBBS.util.HostHolder;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.aalto.myBBS.util.MybbsUtil;
+import com.aalto.myBBS.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,6 +27,9 @@ public class GiveLikeController implements MybbsConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @RequestMapping(path = "/like", method = RequestMethod.POST)
     @ResponseBody
@@ -50,6 +55,13 @@ public class GiveLikeController implements MybbsConstant {
                     .setEntityUserId(entityUserId)
                     .setData("postId", postId);
             eventProducer.fireEvent(event);
+        }
+
+        /* 只有点赞对象为帖子的时候才重新存储帖子数据 */
+        if(entityType == ENTITY_TYPE_POST) {
+            // 计算帖子分数
+            String redisKey = RedisUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, postId);
         }
 
         return MybbsUtil.getJSONString(200, null, map);

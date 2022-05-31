@@ -9,7 +9,9 @@ import com.aalto.myBBS.service.UserService;
 import com.aalto.myBBS.util.HostHolder;
 import com.aalto.myBBS.util.MybbsConstant;
 import com.aalto.myBBS.util.MybbsUtil;
+import com.aalto.myBBS.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,9 @@ public class DiscussPostController implements MybbsConstant {
     @Autowired
     private EventProducer eventProducer;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     // To return the JSON string, we should use the @RequestBody annotation and the String as the return type.
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     @ResponseBody
@@ -59,6 +64,10 @@ public class DiscussPostController implements MybbsConstant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(post.getId());
         eventProducer.fireEvent(event);
+
+        // 标志计算帖子分数
+        String redisKey = RedisUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, post.getId());
 
         // The error will be processed in the future
         return MybbsUtil.getJSONString(200, "The post has been released");
@@ -187,6 +196,10 @@ public class DiscussPostController implements MybbsConstant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
         eventProducer.fireEvent(event);
+
+        // 重新计算帖子分数
+        String redisKey = RedisUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, id);
 
         return MybbsUtil.getJSONString(200, "The status of post is updated");
     }
