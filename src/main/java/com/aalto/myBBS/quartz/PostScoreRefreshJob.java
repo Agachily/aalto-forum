@@ -52,7 +52,7 @@ public class PostScoreRefreshJob implements Job, MybbsConstant {
         BoundSetOperations operations = redisTemplate.boundSetOps(redisKey);
 
         if (operations.size() == 0) {
-            logger.info("[任务取消] 没有需要刷新的帖子!");
+            logger.info("[Task Canceled] 没有需要刷新的帖子!");
             return;
         }
 
