@@ -1,4 +1,4 @@
-let CONTEXT_PATH = "/mybbs";
+let CONTEXT_PATH = "/forum";
 
 window.alert = function(message) {
 	if(!$(".alert-box").length) {

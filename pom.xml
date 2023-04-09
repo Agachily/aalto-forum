@@ -8,11 +8,11 @@
 		<version>2.6.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.aalto.myBBS</groupId>
-	<artifactId>myBBS</artifactId>
+	<groupId>fi.aalto.forum</groupId>
+	<artifactId>aalto-forum</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>myBBS</name>
-	<description>A BBS application built by zetong@aalto.com</description>
+	<description>A forum application built by zetong.zhao@aalto.fi</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>

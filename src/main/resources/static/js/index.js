@@ -12,21 +12,23 @@ function publish() {
     //    xhr.setRequestHeader(header, token);
    	// });
 
-	// Get the title and content
+	/* Get the title and content */
 	let title = $("#recipient-name").val();
 	let content = $("#message-text").val();
 
-	// Sent the request
+	/* Sent the request */
 	$.post(
 		CONTEXT_PATH + "/discuss/add",
 		{"title" : title, "content" : content},
 		(data) => {
 			data = $.parseJSON(data)
 			$("#hintBody").text(data.msg)
+			/* Open the prompt box */
 			$("#hintModal").modal("show")
 			setTimeout(() => {
 				$("#hintModal").modal("hide");
-				if(data.code = 200) {
+				if(data.code === 200) {
+					/* Reload the current page to display the newly added post */
 					window.location.reload()
 				}
 			}, 2000)

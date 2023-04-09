@@ -7,13 +7,11 @@
 </head>
 <body>
 	<div>
+		<p><b th:text="${email}"></b>, Hi there!</p>
 		<p>
-			<b th:text="${email}">xxx@xxx.com</b>, Hi there!
-		</p>
-		<p>
-			您正在注册牛客网, 这是一封激活邮件, 请点击 
-			<a th:href="${url}">This Link</a>,
-			激活您的牛客账号!
+			You are registering Aalto forum! Please click the following link:
+			<br/><a th:href="${url}">This Link</a>,
+			to activate your account.
 		</p>
 	</div>
 </body>

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--此处namespace要写所对应的实体类的全限定名，指明所对应的Mapper接口-->
-<mapper namespace="com.aalto.myBBS.dao.MessageMapper">
+<mapper namespace="fi.aalto.forum.dao.MessageMapper">
 
     <sql id = "selectFields">
         id, from_id, to_id, conversation_id, content, status, create_time

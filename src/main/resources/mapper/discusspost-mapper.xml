@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--此处namespace要写所对应的实体类的全限定名-->
-<mapper namespace="com.aalto.myBBS.dao.DiscussPostMapper">
+<mapper namespace="fi.aalto.forum.dao.DiscussPostMapper">
     <sql id="selectFields">
         id, user_id, title, content, type, status, create_time, comment_count, score
     </sql>
@@ -37,9 +37,9 @@
         </if>
     </select>
 
-    <!--在keyProperty中声明字段id为主键，这样Mybatis在添加完数据后，会自动将返回的主键设置到对象中去。-->
-    <insert id="insertDiscussPost" parameterType="DiscussPost" keyProperty="id">
-        <!--注意此处所插入的变量值要和对象中的字段名称所对应-->
+    <!-- 在keyProperty中声明字段id为主键，这样Mybatis在添加完数据后，会自动将返回的主键设置到对象中去。-->
+    <insert id="insertDiscussPost" parameterType="fi.aalto.forum.entity.DiscussPost" keyProperty="id">
+        <!-- 注意此处所插入的变量值要和对象中的字段名称所对应 -->
         insert into discuss_post(<include refid="insertFields"></include>)
         values(#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
     </insert>
